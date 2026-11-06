@@ -1,0 +1,1800 @@
+```html
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAMADAN SOUND BATTLE 2027 - Tournament Management System</title>
+    
+    <!-- PWA Primary Meta Tags -->
+    <meta name="theme-color" content="#D4AF37">
+    <meta name="description" content="Professional Tournament Management System for Ramadan Sound Battle Roblox 2027">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="RSB 2027">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            400: '#F3E5AB',
+                            500: '#D4AF37',
+                            600: '#AA820A',
+                            700: '#856404'
+                        },
+                        dark: {
+                            bg: '#0D0F12',
+                            card: '#161A20',
+                            border: '#2A303C',
+                            hover: '#1F242E'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Rajdhani', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        body {
+            background-color: #0D0F12;
+            color: #F3F4F6;
+            font-family: 'Inter', sans-serif;
+        }
+        .font-display { font-family: 'Rajdhani', sans-serif; }
+        
+        /* Gold Gradient Elements */
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #FFF099 0%, #D4AF37 50%, #997A15 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gold-gradient-bg {
+            background: linear-gradient(135deg, #D4AF37 0%, #AA820A 100%);
+        }
+        .gold-border-glow {
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
+        }
+        .glass-card {
+            background: rgba(22, 26, 32, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+        }
+        
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0D0F12;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2A303C;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #D4AF37;
+        }
+
+        /* Printable Styles for Clean PDF Exports */
+        @media print {
+            body { background: white !important; color: black !important; }
+            .no-print, header, sidebar, footer, nav, button, .modal { display: none !important; }
+            .print-container { width: 100% !important; margin: 0 !important; padding: 0 !important; }
+            .glass-card { background: white !important; border: 1px solid #ccc !important; box-shadow: none !important; color: black !important; }
+            .gold-gradient-text { -webkit-text-fill-color: black !important; color: black !important; }
+            table { width: 100% !important; border-collapse: collapse !important; }
+            th, td { border: 1px solid #ddd !important; color: black !important; padding: 8px !important; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col md:flex-row antialiased selection:bg-gold-500 selection:text-black">
+
+    <!-- Mobile Navigation Header -->
+    <header class="md:hidden glass-card sticky top-0 z-40 p-4 flex items-center justify-between border-b border-gold-500/20">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg gold-gradient-bg flex items-center justify-center text-dark-bg font-bold text-xl shadow-lg">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+            <div>
+                <h1 class="font-display font-bold text-lg text-white leading-tight">RSB 2027</h1>
+                <p class="text-xs text-gold-400 font-medium">SOUND BATTLE ROBLOX</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <button id="pwaInstallBtnMobile" onclick="triggerPwaInstall()" class="hidden bg-gold-500/20 text-gold-400 p-2 rounded-lg text-sm hover:bg-gold-500/30">
+                <i class="fa-solid fa-download"></i>
+            </button>
+            <button onclick="toggleAdminModal()" id="adminLockBtnMobile" class="bg-dark-hover border border-gold-500/30 text-gold-400 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5">
+                <i class="fa-solid fa-lock" id="adminLockIconMobile"></i>
+                <span id="adminLockTextMobile">Admin</span>
+            </button>
+            <button onclick="toggleMobileSidebar()" class="text-gray-300 hover:text-gold-400 text-xl p-1">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Sidebar / Mobile Drawer Nav -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-dark-card border-r border-gold-500/20 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col justify-between md:static md:z-auto">
+        <div>
+            <!-- Sidebar Header -->
+            <div class="p-6 border-b border-gold-500/15 hidden md:flex items-center gap-3">
+                <div class="w-11 h-11 rounded-xl gold-gradient-bg flex items-center justify-center text-dark-bg text-2xl font-bold shadow-lg shadow-gold-500/20">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <div>
+                    <h1 class="font-display font-bold text-xl text-white tracking-wide leading-none">RAMADAN</h1>
+                    <span class="gold-gradient-text font-display font-extrabold text-sm tracking-wider">SOUND BATTLE '27</span>
+                </div>
+            </div>
+
+            <!-- Mode Banner -->
+            <div class="mx-4 mt-4 p-2.5 rounded-lg bg-dark-bg/60 border border-gold-500/20 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <span id="modeDot" class="w-2.5 h-2.5 rounded-full bg-blue-400"></span>
+                    <span id="modeStatusText" class="text-xs font-semibold text-gray-300">Mode Publik</span>
+                </div>
+                <button onclick="toggleAdminModal()" class="text-xs text-gold-400 hover:underline font-medium">
+                    <i class="fa-solid fa-key text-[10px]"></i> <span id="modeActionText">Login Admin</span>
+                </button>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="p-4 space-y-1">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 text-gold-400 bg-gold-500/10 border border-gold-500/30">
+                    <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                    <span>Dashboard & Klasemen</span>
+                </button>
+                <button onclick="switchTab('schedule')" id="nav-schedule" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-gray-400 hover:text-gold-400 hover:bg-dark-hover transition-all duration-200">
+                    <i class="fa-solid fa-calendar-days w-5 text-center"></i>
+                    <span>Jadwal & Match Center</span>
+                </button>
+                <button onclick="switchTab('knockout')" id="nav-knockout" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-gray-400 hover:text-gold-400 hover:bg-dark-hover transition-all duration-200">
+                    <i class="fa-solid fa-diagram-project w-5 text-center"></i>
+                    <span>Knockout Bracket</span>
+                </button>
+                <button onclick="switchTab('stats')" id="nav-stats" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-gray-400 hover:text-gold-400 hover:bg-dark-hover transition-all duration-200">
+                    <i class="fa-solid fa-chart-line w-5 text-center"></i>
+                    <span>Statistik Peserta</span>
+                </button>
+                
+                <div class="pt-4 border-t border-gray-800/80 my-2">
+                    <p class="px-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">Panel Admin</p>
+                    <button onclick="switchTab('participants')" id="nav-participants" class="admin-only nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-gray-400 hover:text-gold-400 hover:bg-dark-hover transition-all duration-200 opacity-60">
+                        <i class="fa-solid fa-users w-5 text-center"></i>
+                        <span>Manajemen Peserta</span>
+                    </button>
+                    <button onclick="switchTab('admin')" id="nav-admin" class="admin-only nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-gray-400 hover:text-gold-400 hover:bg-dark-hover transition-all duration-200 opacity-60">
+                        <i class="fa-solid fa-sliders w-5 text-center"></i>
+                        <span>Pengaturan & Generator</span>
+                    </button>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Sidebar Footer Tools -->
+        <div class="p-4 border-t border-gold-500/15 space-y-2">
+            <button id="pwaInstallBtn" onclick="triggerPwaInstall()" class="hidden w-full bg-gold-500 text-dark-bg font-bold py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-gold-500/20 hover:bg-gold-400 transition-all">
+                <i class="fa-solid fa-mobile-screen"></i> Install Aplikasi PWA
+            </button>
+            <button onclick="openShareModal()" class="w-full bg-dark-hover border border-gold-500/30 text-gold-400 font-semibold py-2 px-4 rounded-xl text-xs flex items-center justify-center gap-2 hover:bg-gold-500/10 transition-all">
+                <i class="fa-solid fa-share-nodes"></i> Bagikan Link Turnamen
+            </button>
+            <div class="text-center pt-2">
+                <span class="text-[10px] text-gray-500">Ramadan Sound Battle v2027.1</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Overlay backdrop for mobile drawer -->
+    <div id="sidebarBackdrop" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-black/70 z-40 hidden md:hidden"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 print-container">
+
+        <!-- Top Header Bar (Desktop & Public Info) -->
+        <div class="glass-card rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-center justify-between gap-4 border-gold-500/20">
+            <div class="flex items-center gap-4 w-full md:w-auto">
+                <div class="hidden md:flex w-14 h-14 rounded-2xl gold-gradient-bg items-center justify-center text-dark-bg text-3xl font-extrabold shadow-lg shadow-gold-500/20">
+                    <i class="fa-solid fa-bullhorn"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-gold-500/20 text-gold-400 border border-gold-500/30 uppercase tracking-wide">Official League 2027</span>
+                        <span id="syncBadge" class="text-[11px] text-emerald-400 flex items-center gap-1"><i class="fa-solid fa-rotate animate-spin text-[10px]"></i> Synchronized</span>
+                    </div>
+                    <h2 class="text-xl md:text-2xl font-bold font-display text-white mt-1">RAMADAN SOUND BATTLE ROBLOX</h2>
+                    <p class="text-xs text-gray-400">Sistem Liga Profesional Sound Battle 32 Peserta & Matchday Non-Numeric</p>
+                </div>
+            </div>
+
+            <!-- Quick Action Bar -->
+            <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+                <button onclick="window.print()" class="no-print bg-dark-hover border border-gray-700 text-gray-300 hover:text-gold-400 px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all">
+                    <i class="fa-solid fa-print"></i> PDF / Cetak
+                </button>
+                <button onclick="exportJSONBackup()" class="no-print bg-dark-hover border border-gray-700 text-gray-300 hover:text-gold-400 px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all">
+                    <i class="fa-solid fa-download"></i> Backup JSON
+                </button>
+            </div>
+        </div>
+
+        <!-- LIVE COUNTDOWN WIDGET -->
+        <div id="liveCountdownWidget" class="hidden glass-card rounded-2xl p-4 md:p-5 border-l-4 border-l-gold-500 bg-gradient-to-r from-dark-card via-dark-card to-gold-500/10">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-3 h-3 rounded-full bg-red-500 animate-ping"></div>
+                    <div>
+                        <span class="text-xs text-gold-400 font-semibold uppercase tracking-wider">Pertandingan Selanjutnya</span>
+                        <h4 id="nextMatchTitle" class="text-base font-bold text-white">Peserta A vs Peserta B</h4>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="text-center bg-dark-bg/80 border border-gold-500/20 px-3 py-1.5 rounded-lg min-w-[55px]">
+                        <span id="cdDays" class="text-lg font-bold font-display text-gold-400">00</span>
+                        <span class="block text-[9px] text-gray-400 uppercase">Hari</span>
+                    </div>
+                    <span class="text-gold-500 font-bold">:</span>
+                    <div class="text-center bg-dark-bg/80 border border-gold-500/20 px-3 py-1.5 rounded-lg min-w-[55px]">
+                        <span id="cdHours" class="text-lg font-bold font-display text-gold-400">00</span>
+                        <span class="block text-[9px] text-gray-400 uppercase">Jam</span>
+                    </div>
+                    <span class="text-gold-500 font-bold">:</span>
+                    <div class="text-center bg-dark-bg/80 border border-gold-500/20 px-3 py-1.5 rounded-lg min-w-[55px]">
+                        <span id="cdMins" class="text-lg font-bold font-display text-gold-400">00</span>
+                        <span class="block text-[9px] text-gray-400 uppercase">Menit</span>
+                    </div>
+                    <span class="text-gold-500 font-bold">:</span>
+                    <div class="text-center bg-dark-bg/80 border border-gold-500/20 px-3 py-1.5 rounded-lg min-w-[55px]">
+                        <span id="cdSecs" class="text-lg font-bold font-display text-gold-400">00</span>
+                        <span class="block text-[9px] text-gray-400 uppercase">Detik</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 1: DASHBOARD & STANDINGS -->
+        <section id="tab-dashboard" class="tab-content space-y-6">
+            <!-- Summary Metric Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="glass-card rounded-xl p-4 border-gold-500/10 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-gold-500/15 text-gold-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div>
+                        <p class="text-[11px] text-gray-400 font-medium">Total Peserta</p>
+                        <h3 id="statTotalParticipants" class="text-xl font-bold font-display text-white">0 / 32</h3>
+                    </div>
+                </div>
+                <div class="glass-card rounded-xl p-4 border-gold-500/10 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-gamepad"></i>
+                    </div>
+                    <div>
+                        <p class="text-[11px] text-gray-400 font-medium">Match Selesai</p>
+                        <h3 id="statFinishedMatches" class="text-xl font-bold font-display text-white">0 / 0</h3>
+                    </div>
+                </div>
+                <div class="glass-card rounded-xl p-4 border-gold-500/10 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-blue-500/15 text-blue-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                    <div>
+                        <p class="text-[11px] text-gray-400 font-medium">Grup Terbentuk</p>
+                        <h3 id="statTotalGroups" class="text-xl font-bold font-display text-white">8 Grup</h3>
+                    </div>
+                </div>
+                <div class="glass-card rounded-xl p-4 border-gold-500/10 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-purple-500/15 text-purple-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-crown"></i>
+                    </div>
+                    <div>
+                        <p class="text-[11px] text-gray-400 font-medium">Fase Turnamen</p>
+                        <h3 id="statCurrentPhase" class="text-xl font-bold font-display text-gold-400">Group Stage</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Group Standings Grid (Group A - H) -->
+            <div class="flex justify-between items-center pt-2">
+                <div>
+                    <h3 class="text-lg font-bold font-display text-white flex items-center gap-2">
+                        <i class="fa-solid fa-table text-gold-400"></i> KLASEMEN GRUP (ROUND ROBIN)
+                    </h3>
+                    <p class="text-xs text-gray-400">Sistem Poin Sepak Bola: MENANG = 3 PTS | SERI = 1 PT | KALAH = 0 PTS (Top 2 Lolos Knockout)</p>
+                </div>
+            </div>
+
+            <div id="groupStandingsGrid" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Group tables will be dynamically rendered here -->
+            </div>
+        </section>
+
+        <!-- TAB 2: SCHEDULE & MATCH CENTER -->
+        <section id="tab-schedule" class="tab-content hidden space-y-6">
+            <!-- Filter Bar -->
+            <div class="glass-card rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 border-gold-500/20">
+                <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                    <select id="filterGroup" onchange="renderSchedule()" class="bg-dark-bg border border-gold-500/30 text-gray-300 text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-gold-500">
+                        <option value="ALL">Semua Grup (A - H)</option>
+                        <option value="A">Grup A</option>
+                        <option value="B">Grup B</option>
+                        <option value="C">Grup C</option>
+                        <option value="D">Grup D</option>
+                        <option value="E">Grup E</option>
+                        <option value="F">Grup F</option>
+                        <option value="G">Grup G</option>
+                        <option value="H">Grup H</option>
+                    </select>
+
+                    <select id="filterMatchday" onchange="renderSchedule()" class="bg-dark-bg border border-gold-500/30 text-gray-300 text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-gold-500">
+                        <option value="ALL">Semua Matchday</option>
+                        <option value="1">Matchday 1</option>
+                        <option value="2">Matchday 2</option>
+                        <option value="3">Matchday 3</option>
+                    </select>
+
+                    <select id="filterStatus" onchange="renderSchedule()" class="bg-dark-bg border border-gold-500/30 text-gray-300 text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-gold-500">
+                        <option value="ALL">Semua Status</option>
+                        <option value="Upcoming">Upcoming</option>
+                        <option value="Live">Live 🔴</option>
+                        <option value="Finished">Finished</option>
+                        <option value="Postponed">Postponed</option>
+                    </select>
+                </div>
+
+                <div class="w-full md:w-64">
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-gray-500 text-xs"></i>
+                        <input type="text" id="scheduleSearch" onkeyup="renderSchedule()" placeholder="Cari nama peserta..." class="w-full bg-dark-bg border border-gold-500/30 text-white text-xs rounded-lg pl-8 pr-3 py-2 focus:outline-none focus:border-gold-500">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Matches List -->
+            <div id="scheduleContainer" class="space-y-3">
+                <!-- Matches generated dynamically -->
+            </div>
+        </section>
+
+        <!-- TAB 3: KNOCKOUT BRACKET -->
+        <section id="tab-knockout" class="tab-content hidden space-y-6">
+            <div class="glass-card rounded-2xl p-6 border-gold-500/20">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold font-display text-white flex items-center gap-2">
+                            <i class="fa-solid fa-sitemap text-gold-400"></i> KNOCKOUT STAGE (BABAK GUGUR)
+                        </h3>
+                        <p class="text-xs text-gray-400">Pemenang otomatis maju ke babak berikutnya. Hasil SERI memerlukan pertandingan penentuan.</p>
+                    </div>
+                    <button onclick="autoSeedKnockout()" class="admin-only bg-gold-500 text-dark-bg font-bold px-4 py-2 rounded-xl text-xs hover:bg-gold-400 transition-all flex items-center gap-2 shadow-lg shadow-gold-500/20">
+                        <i class="fa-solid fa-bolt"></i> Generate Bracket 16 Besar (Dari Klasemen)
+                    </button>
+                </div>
+
+                <!-- Champion Showcase Card (If Winner Decided) -->
+                <div id="championHall" class="hidden mb-8 p-6 rounded-2xl bg-gradient-to-r from-gold-500/20 via-gold-500/10 to-transparent border border-gold-500/40 text-center relative overflow-hidden">
+                    <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl text-gold-400">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <div class="inline-block p-3 rounded-full bg-gold-500/20 text-gold-400 text-3xl mb-2 gold-border-glow">
+                        <i class="fa-solid fa-crown"></i>
+                    </div>
+                    <span class="block text-xs uppercase font-bold tracking-widest text-gold-400">JUARA ULTIMATE SOUND BATTLE 2027</span>
+                    <h2 id="championName" class="text-3xl font-extrabold font-display text-white mt-1">PLAYER NAME</h2>
+                    <p id="championRoblox" class="text-sm text-gold-300">@RobloxUsername</p>
+                </div>
+
+                <!-- Bracket Render Canvas / Scrollable View -->
+                <div class="overflow-x-auto pb-6">
+                    <div class="min-w-[1000px] grid grid-cols-5 gap-4 items-center">
+                        <!-- Column 1: Round of 16 -->
+                        <div class="space-y-4">
+                            <div class="text-center font-display font-bold text-xs text-gold-400 border-b border-gold-500/20 pb-2">ROUND OF 16</div>
+                            <div id="bracket-R16" class="space-y-4"></div>
+                        </div>
+                        <!-- Column 2: Quarter Finals -->
+                        <div class="space-y-8">
+                            <div class="text-center font-display font-bold text-xs text-gold-400 border-b border-gold-500/20 pb-2">QUARTER FINALS</div>
+                            <div id="bracket-QF" class="space-y-8"></div>
+                        </div>
+                        <!-- Column 3: Semi Finals -->
+                        <div class="space-y-16">
+                            <div class="text-center font-display font-bold text-xs text-gold-400 border-b border-gold-500/20 pb-2">SEMI FINALS</div>
+                            <div id="bracket-SF" class="space-y-16"></div>
+                        </div>
+                        <!-- Column 4: 3rd Place Match -->
+                        <div class="space-y-24">
+                            <div class="text-center font-display font-bold text-xs text-gold-400 border-b border-gold-500/20 pb-2">3RD PLACE</div>
+                            <div id="bracket-THIRD" class="space-y-24"></div>
+                        </div>
+                        <!-- Column 5: Grand Final -->
+                        <div class="space-y-24">
+                            <div class="text-center font-display font-extrabold text-xs text-gold-500 border-b border-gold-500/40 pb-2">GRAND FINAL 🏆</div>
+                            <div id="bracket-FINAL" class="space-y-24"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: STATISTICS -->
+        <section id="tab-stats" class="tab-content hidden space-y-6">
+            <div class="glass-card rounded-2xl p-6 border-gold-500/20">
+                <h3 class="text-xl font-bold font-display text-white flex items-center gap-2 mb-4">
+                    <i class="fa-solid fa-chart-simple text-gold-400"></i> PERFORMA & STATISTIK PESERTA
+                </h3>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-gray-300">
+                        <thead class="bg-dark-bg/80 text-gold-400 uppercase font-display border-b border-gold-500/20">
+                            <tr>
+                                <th class="p-3">Rank</th>
+                                <th class="p-3">Nama Peserta</th>
+                                <th class="p-3">Roblox Username</th>
+                                <th class="p-3">Grup</th>
+                                <th class="p-3 text-center">Main</th>
+                                <th class="p-3 text-center">Menang</th>
+                                <th class="p-3 text-center">Seri</th>
+                                <th class="p-3 text-center">Kalah</th>
+                                <th class="p-3 text-center">Win Rate %</th>
+                                <th class="p-3 text-center">Total Poin</th>
+                            </tr>
+                        </thead>
+                        <tbody id="statsTableBody" class="divide-y divide-gray-800/60">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: PARTICIPANT MANAGEMENT (ADMIN ONLY) -->
+        <section id="tab-participants" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Add Participant Form -->
+                <div class="glass-card rounded-2xl p-6 border-gold-500/20 h-fit">
+                    <h3 id="participantFormTitle" class="text-base font-bold font-display text-white flex items-center gap-2 mb-4">
+                        <i class="fa-solid fa-user-plus text-gold-400"></i> Tambah Peserta Baru
+                    </h3>
+                    <form id="participantForm" onsubmit="handleSaveParticipant(event)" class="space-y-4">
+                        <input type="hidden" id="editParticipantId" value="">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-400 mb-1">Nama Peserta</label>
+                            <input type="text" id="inputPartName" required placeholder="Contoh: Sound King" class="w-full bg-dark-bg border border-gold-500/30 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-gold-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-400 mb-1">Username Roblox</label>
+                            <input type="text" id="inputPartRoblox" required placeholder="Contoh: SoundKing_RBLX" class="w-full bg-dark-bg border border-gold-500/30 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-gold-500">
+                        </div>
+                        <div class="flex gap-2 pt-2">
+                            <button type="submit" class="flex-1 bg-gold-500 text-dark-bg font-bold py-2.5 rounded-xl text-xs hover:bg-gold-400 transition-all">
+                                Simpan Peserta
+                            </button>
+                            <button type="button" onclick="cancelEditParticipant()" id="btnCancelEdit" class="hidden bg-gray-700 text-gray-300 py-2.5 px-3 rounded-xl text-xs hover:bg-gray-600">
+                                Batal
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="mt-6 pt-4 border-t border-gray-800 space-y-2">
+                        <button onclick="fillPreset32Participants()" class="w-full bg-dark-hover border border-gold-500/30 text-gold-400 py-2 rounded-xl text-xs font-semibold hover:bg-gold-500/10 transition-all">
+                            <i class="fa-solid fa-bolt"></i> Load 32 Sample Peserta Ramadan
+                        </button>
+                        <button onclick="shuffleParticipants()" class="w-full bg-dark-hover border border-gray-700 text-gray-300 py-2 rounded-xl text-xs font-semibold hover:text-gold-400 transition-all">
+                            <i class="fa-solid fa-shuffle"></i> Acak Pengurutan Peserta
+                        </button>
+                        <button onclick="autoGenerateGroups()" class="w-full bg-gold-500/20 text-gold-400 border border-gold-500/40 py-2 rounded-xl text-xs font-bold hover:bg-gold-500/30 transition-all">
+                            <i class="fa-solid fa-table-cells"></i> Auto-Generate 8 Grup (A-H)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Participant Table -->
+                <div class="md:col-span-2 glass-card rounded-2xl p-6 border-gold-500/20">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-base font-bold font-display text-white">Daftar Peserta (<span id="participantCount">0</span>/32)</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-gray-300">
+                            <thead class="bg-dark-bg/80 text-gold-400 uppercase font-display border-b border-gold-500/20">
+                                <tr>
+                                    <th class="p-3">#</th>
+                                    <th class="p-3">Nama</th>
+                                    <th class="p-3">Roblox Username</th>
+                                    <th class="p-3">Grup</th>
+                                    <th class="p-3 text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="participantTableBody" class="divide-y divide-gray-800/60">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 6: ADMIN SETTINGS & SCHEDULE GENERATOR -->
+        <section id="tab-admin" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Schedule Generator Config -->
+                <div class="glass-card rounded-2xl p-6 border-gold-500/20">
+                    <h3 class="text-base font-bold font-display text-white flex items-center gap-2 mb-4">
+                        <i class="fa-solid fa-wand-magic-sparkles text-gold-400"></i> Automatic Schedule Generator
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-400 mb-1">Tanggal Mulai Turnamen</label>
+                            <input type="date" id="genStartDate" class="w-full bg-dark-bg border border-gold-500/30 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-gold-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-400 mb-1">Interval Pertandingan</label>
+                            <select id="genInterval" class="w-full bg-dark-bg border border-gold-500/30 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-gold-500">
+                                <option value="2">Setiap 2 Hari Sekali</option>
+                                <option value="3">Setiap 3 Hari Sekali</option>
+                                <option value="1">Setiap Hari</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-400 mb-1">Jam Standar Pertandingan</label>
+                            <input type="time" id="genStartTime" value="20:00" class="w-full bg-dark-bg border border-gold-500/30 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-gold-500">
+                        </div>
+                        <button onclick="generateFullSchedule()" class="w-full bg-gold-500 text-dark-bg font-bold py-3 rounded-xl text-xs hover:bg-gold-400 transition-all shadow-lg shadow-gold-500/20">
+                            <i class="fa-solid fa-calendar-plus"></i> Generate Seluruh Jadwal Group Stage
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Admin Security & Danger Zone -->
+                <div class="glass-card rounded-2xl p-6 border-gold-500/20 space-y-6">
+                    <div>
+                        <h3 class="text-base font-bold font-display text-white flex items-center gap-2 mb-4">
+                            <i class="fa-solid fa-shield-halved text-gold-400"></i> Keamanan Access PIN
+                        </h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-400 mb-1">Ubah Admin PIN</label>
+                                <div class="flex gap-2">
+                                    <input type="password" id="newAdminPin" placeholder="Masukkan PIN baru" class="flex-1 bg-dark-bg border border-gold-500/30 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-gold-500">
+                                    <button onclick="changeAdminPin()" class="bg-dark-hover border border-gold-500/30 text-gold-400 px-4 rounded-xl text-xs font-semibold hover:bg-gold-500/10">
+                                        Simpan
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-gray-800">
+                        <h3 class="text-base font-bold font-display text-red-400 flex items-center gap-2 mb-2">
+                            <i class="fa-solid fa-triangle-exclamation"></i> Danger Zone
+                        </h3>
+                        <p class="text-xs text-gray-400 mb-3">Tindakan ini akan menghapus seluruh peserta, jadwal, dan klasemen turnamen.</p>
+                        <button onclick="confirmResetTournament()" class="w-full bg-red-500/20 border border-red-500/40 text-red-400 font-bold py-2.5 rounded-xl text-xs hover:bg-red-500/30 transition-all">
+                            <i class="fa-solid fa-rotate-left"></i> Reset Seluruh Data Turnamen
+                        </button>
+                    </div>
+
+                    <div class="pt-4 border-t border-gray-800">
+                        <h3 class="text-base font-bold font-display text-white flex items-center gap-2 mb-2">
+                            <i class="fa-solid fa-file-import text-gold-400"></i> Restore JSON Backup
+                        </h3>
+                        <input type="file" id="jsonFileInput" accept=".json" onchange="importJSONBackup(event)" class="hidden">
+                        <button onclick="document.getElementById('jsonFileInput').click()" class="w-full bg-dark-hover border border-gray-700 text-gray-300 font-semibold py-2.5 rounded-xl text-xs hover:text-gold-400 transition-all">
+                            <i class="fa-solid fa-upload"></i> Upload & Import File Backup JSON
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL 1: ADMIN PIN LOGIN -->
+    <div id="adminPinModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-card rounded-2xl p-6 max-w-sm w-full border-gold-500/30 relative">
+            <button onclick="closeAdminModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-sm">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 rounded-2xl gold-gradient-bg flex items-center justify-center text-dark-bg text-2xl font-bold mx-auto mb-3 shadow-lg shadow-gold-500/20">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h3 class="text-lg font-bold font-display text-white">Verifikasi Admin</h3>
+                <p class="text-xs text-gray-400 mt-1">Masukkan Security PIN untuk mengedit data turnamen</p>
+            </div>
+            <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                <input type="password" id="inputAdminPin" required autofocus placeholder="Masukkan PIN Admin" class="w-full bg-dark-bg border border-gold-500/40 rounded-xl p-3 text-center text-lg tracking-widest text-white focus:outline-none focus:border-gold-500">
+                <button type="submit" class="w-full bg-gold-500 text-dark-bg font-bold py-3 rounded-xl text-xs hover:bg-gold-400 transition-all shadow-lg shadow-gold-500/20">
+                    Masuk Sebagai Admin
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: MATCH RESULT EDIT MODAL -->
+    <div id="matchEditModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-card rounded-2xl p-6 max-w-md w-full border-gold-500/30 relative">
+            <button onclick="closeMatchModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-sm">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="text-center mb-6">
+                <span id="modalMatchMeta" class="text-xs text-gold-400 font-bold uppercase tracking-wider">Match ID - Group A</span>
+                <h3 class="text-lg font-bold font-display text-white mt-1">Konfirmasi Hasil Pertandingan</h3>
+                <p class="text-[11px] text-gray-400">Sistem Hasil Sepak Bola Tanpa Skor Angka (3-1-0)</p>
+            </div>
+
+            <input type="hidden" id="modalMatchId">
+
+            <div class="space-y-4">
+                <!-- Status Picker -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 mb-1">Status Pertandingan</label>
+                    <select id="modalMatchStatus" class="w-full bg-dark-bg border border-gold-500/30 rounded-xl p-2.5 text-xs text-white">
+                        <option value="Upcoming">Upcoming</option>
+                        <option value="Live">Live 🔴</option>
+                        <option value="Finished">Finished</option>
+                        <option value="Postponed">Postponed</option>
+                    </select>
+                </div>
+
+                <!-- Reschedule Picker -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 mb-1">Jadwal Tanggal & Jam</label>
+                    <input type="datetime-local" id="modalMatchDateTime" class="w-full bg-dark-bg border border-gold-500/30 rounded-xl p-2.5 text-xs text-white">
+                </div>
+
+                <!-- Strict Match Outcome Selection -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 mb-2">Hasil Akhir Pertandingan</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button type="button" onclick="selectOutcome('TEAM1_WIN')" id="btnOutcomeT1" class="outcome-btn p-3 rounded-xl border border-gray-700 bg-dark-bg text-center text-xs font-bold hover:border-gold-500 transition-all">
+                            <span id="labelTeam1Win">Tim A Menang</span>
+                            <span class="block text-[10px] font-normal text-gold-400 mt-0.5">(3 Poin)</span>
+                        </button>
+                        <button type="button" onclick="selectOutcome('DRAW')" id="btnOutcomeDraw" class="outcome-btn p-3 rounded-xl border border-gray-700 bg-dark-bg text-center text-xs font-bold hover:border-gold-500 transition-all">
+                            <span>SERI</span>
+                            <span class="block text-[10px] font-normal text-blue-400 mt-0.5">(1-1 Poin)</span>
+                        </button>
+                        <button type="button" onclick="selectOutcome('TEAM2_WIN')" id="btnOutcomeT2" class="outcome-btn p-3 rounded-xl border border-gray-700 bg-dark-bg text-center text-xs font-bold hover:border-gold-500 transition-all">
+                            <span id="labelTeam2Win">Tim B Menang</span>
+                            <span class="block text-[10px] font-normal text-gold-400 mt-0.5">(3 Poin)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <button onclick="saveMatchResult()" class="w-full bg-gold-500 text-dark-bg font-bold py-3 rounded-xl text-xs hover:bg-gold-400 transition-all shadow-lg shadow-gold-500/20 mt-2">
+                    Konfirmasi & Update Klasemen
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: PUBLIC SHARE MODAL -->
+    <div id="shareModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-card rounded-2xl p-6 max-w-sm w-full border-gold-500/30 relative text-center">
+            <button onclick="closeShareModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-sm">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="w-12 h-12 rounded-2xl gold-gradient-bg flex items-center justify-center text-dark-bg text-2xl font-bold mx-auto mb-3 shadow-lg shadow-gold-500/20">
+                <i class="fa-solid fa-share-nodes"></i>
+            </div>
+            <h3 class="text-lg font-bold font-display text-white">Bagikan Link Turnamen</h3>
+            <p class="text-xs text-gray-400 mt-1">Salin link berikut untuk dibagikan kepada peserta atau anggota grup Roblox.</p>
+            <div class="mt-4 flex gap-2">
+                <input type="text" id="shareUrlInput" readonly class="w-full bg-dark-bg border border-gold-500/30 rounded-xl p-2.5 text-xs text-gold-400 focus:outline-none">
+                <button onclick="copyShareUrl()" class="bg-gold-500 text-dark-bg font-bold px-4 rounded-xl text-xs hover:bg-gold-400">
+                    Salin
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK & Application Logic Scripts -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global Firebase Handler & App State Initialization
+        let db = null;
+        let auth = null;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'ramadan-sound-battle-2027';
+
+        // Default Initial Application State
+        window.state = {
+            adminPin: "2027",
+            isAdmin: false,
+            tournamentName: "RAMADAN SOUND BATTLE 2027",
+            startDate: "2027-03-10",
+            intervalDays: 2,
+            participants: [],
+            matches: [],
+            knockoutMatches: [],
+            champions: { first: null, second: null, third: null }
+        };
+
+        // Initialize Firebase Storage if config available
+        if (typeof __firebase_config !== 'undefined') {
+            try {
+                const firebaseConfig = JSON.parse(__firebase_config);
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                const initAuth = async () => {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                };
+
+                initAuth().then(() => {
+                    onAuthStateChanged(auth, (user) => {
+                        if (user) {
+                            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'tournament_state', 'current');
+                            onSnapshot(docRef, (snapshot) => {
+                                if (snapshot.exists()) {
+                                    const remoteState = snapshot.data();
+                                    window.state = { ...window.state, ...remoteState };
+                                    saveToLocalStorage();
+                                    renderApp();
+                                    updateSyncBadge(true);
+                                } else {
+                                    // First time initialization
+                                    syncStateToCloud();
+                                }
+                            }, (err) => {
+                                console.warn("Firestore snapshot warning:", err);
+                                updateSyncBadge(false);
+                            });
+                        }
+                    });
+                }).catch(err => {
+                    console.warn("Auth initialization fallback:", err);
+                    updateSyncBadge(false);
+                });
+            } catch (e) {
+                console.warn("Firebase Setup Skipped, running in local persistence mode.", e);
+                updateSyncBadge(false);
+            }
+        } else {
+            updateSyncBadge(false);
+        }
+
+        window.syncStateToCloud = async function() {
+            saveToLocalStorage();
+            renderApp();
+            if (db && auth && auth.currentUser) {
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'tournament_state', 'current');
+                    await setDoc(docRef, window.state);
+                    updateSyncBadge(true);
+                } catch (e) {
+                    console.error("Cloud save failed:", e);
+                    updateSyncBadge(false);
+                }
+            }
+        };
+
+        function updateSyncBadge(online) {
+            const badge = document.getElementById('syncBadge');
+            if (!badge) return;
+            if (online) {
+                badge.innerHTML = `<i class="fa-solid fa-cloud text-emerald-400"></i> Cloud Realtime`;
+                badge.className = "text-[11px] text-emerald-400 flex items-center gap-1 font-medium";
+            } else {
+                badge.innerHTML = `<i class="fa-solid fa-hard-drive text-gold-400"></i> Local Storage`;
+                badge.className = "text-[11px] text-gold-400 flex items-center gap-1 font-medium";
+            }
+        }
+    </script>
+
+    <script>
+        // CORE APPLICATION LOGIC & UI CONTROLLERS
+
+        // Local Storage Fallback Strategy
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('rsb_2027_tournament_data');
+            if (saved) {
+                try {
+                    window.state = { ...window.state, ...JSON.parse(saved) };
+                } catch (e) {
+                    console.error("Failed parsing localStorage", e);
+                }
+            }
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('rsb_2027_tournament_data', JSON.stringify(window.state));
+        }
+
+        // Window Onload Dispatcher
+        window.onload = function() {
+            loadFromLocalStorage();
+            
+            // Auto-load sample participants if empty for instant out-of-the-box playability
+            if (!window.state.participants || window.state.participants.length === 0) {
+                fillPreset32Participants(false);
+            }
+
+            renderApp();
+            startLiveMatchCountdown();
+            setupPwa();
+
+            // Setup share URL input
+            document.getElementById('shareUrlInput').value = window.location.href;
+        };
+
+        // Main Rendering Orchestrator
+        function renderApp() {
+            updateAdminUIState();
+            renderDashboardStandings();
+            renderSchedule();
+            renderKnockoutBracket();
+            renderStatsTable();
+            renderParticipantTable();
+            updateMetricCards();
+        }
+
+        // Navigation Tab Switcher
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-gold-400', 'bg-gold-500/10', 'border', 'border-gold-500/30');
+                btn.classList.add('text-gray-400');
+            });
+
+            const targetTab = document.getElementById(`tab-${tabId}`);
+            const targetNav = document.getElementById(`nav-${tabId}`);
+            if (targetTab) targetTab.classList.remove('hidden');
+            if (targetNav) {
+                targetNav.classList.remove('text-gray-400');
+                targetNav.classList.add('text-gold-400', 'bg-gold-500/10', 'border', 'border-gold-500/30');
+            }
+
+            // Close mobile menu if open
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            if (!sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.add('-translate-x-full');
+                backdrop.classList.add('hidden');
+            }
+        }
+
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            sidebar.classList.toggle('-translate-x-full');
+            backdrop.classList.toggle('hidden');
+        }
+
+        // ADMIN PIN SECURITY SYSTEM
+        function toggleAdminModal() {
+            if (window.state.isAdmin) {
+                // Logout Admin
+                window.state.isAdmin = false;
+                renderApp();
+            } else {
+                document.getElementById('adminPinModal').classList.remove('hidden');
+            }
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminPinModal').classList.add('hidden');
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const pin = document.getElementById('inputAdminPin').value;
+            if (pin === window.state.adminPin) {
+                window.state.isAdmin = true;
+                document.getElementById('inputAdminPin').value = '';
+                closeAdminModal();
+                renderApp();
+            } else {
+                alert("Security PIN salah!");
+            }
+        }
+
+        function updateAdminUIState() {
+            const modeDot = document.getElementById('modeDot');
+            const modeStatusText = document.getElementById('modeStatusText');
+            const modeActionText = document.getElementById('modeActionText');
+            const lockIcon = document.getElementById('adminLockIconMobile');
+            const lockText = document.getElementById('adminLockTextMobile');
+
+            if (window.state.isAdmin) {
+                modeDot.className = "w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse";
+                modeStatusText.innerText = "Mode Admin (Aktif)";
+                modeActionText.innerText = "Logout Admin";
+                if (lockIcon) lockIcon.className = "fa-solid fa-lock-open text-emerald-400";
+                if (lockText) lockText.innerText = "Keluar";
+
+                document.querySelectorAll('.admin-only').forEach(el => {
+                    el.classList.remove('opacity-60', 'pointer-events-none');
+                });
+            } else {
+                modeDot.className = "w-2.5 h-2.5 rounded-full bg-blue-400";
+                modeStatusText.innerText = "Mode Publik (Read-Only)";
+                modeActionText.innerText = "Login Admin";
+                if (lockIcon) lockIcon.className = "fa-solid fa-lock text-gold-400";
+                if (lockText) lockText.innerText = "Admin";
+
+                document.querySelectorAll('.admin-only').forEach(el => {
+                    el.classList.add('opacity-60');
+                });
+            }
+        }
+
+        function changeAdminPin() {
+            if (!window.state.isAdmin) return alert("Hanya admin yang dapat menguji fitur ini.");
+            const newPin = document.getElementById('newAdminPin').value;
+            if (newPin && newPin.length >= 4) {
+                window.state.adminPin = newPin;
+                document.getElementById('newAdminPin').value = '';
+                saveAndSync();
+                alert("PIN Security Admin berhasil diperbarui!");
+            } else {
+                alert("PIN minimal harus 4 karakter.");
+            }
+        }
+
+        // PARTICIPANT MANAGEMENT LOGIC
+        function handleSaveParticipant(e) {
+            e.preventDefault();
+            if (!window.state.isAdmin) return alert("Silakan login admin terlebih dahulu!");
+
+            const editId = document.getElementById('editParticipantId').value;
+            const name = document.getElementById('inputPartName').value.trim();
+            const roblox = document.getElementById('inputPartRoblox').value.trim();
+
+            if (editId) {
+                // Update
+                const p = window.state.participants.find(item => item.id === editId);
+                if (p) {
+                    p.name = name;
+                    p.roblox = roblox;
+                }
+            } else {
+                // Add New (Max 32)
+                if (window.state.participants.length >= 32) {
+                    return alert("Maksimal 32 peserta telah tercapai!");
+                }
+                window.state.participants.push({
+                    id: 'p_' + Date.now() + Math.random().toString(36).substr(2, 4),
+                    name: name,
+                    roblox: roblox,
+                    group: null
+                });
+            }
+
+            cancelEditParticipant();
+            saveAndSync();
+        }
+
+        function editParticipant(id) {
+            const p = window.state.participants.find(item => item.id === id);
+            if (!p) return;
+            document.getElementById('editParticipantId').value = p.id;
+            document.getElementById('inputPartName').value = p.name;
+            document.getElementById('inputPartRoblox').value = p.roblox;
+            document.getElementById('participantFormTitle').innerText = "Edit Data Peserta";
+            document.getElementById('btnCancelEdit').classList.remove('hidden');
+        }
+
+        function cancelEditParticipant() {
+            document.getElementById('editParticipantId').value = '';
+            document.getElementById('participantForm').reset();
+            document.getElementById('participantFormTitle').innerText = "Tambah Peserta Baru";
+            document.getElementById('btnCancelEdit').classList.add('hidden');
+        }
+
+        function deleteParticipant(id) {
+            if (!window.state.isAdmin) return alert("Akses Admin diperlukan.");
+            window.state.participants = window.state.participants.filter(p => p.id !== id);
+            saveAndSync();
+        }
+
+        function shuffleParticipants() {
+            if (!window.state.isAdmin) return alert("Akses Admin diperlukan.");
+            for (let i = window.state.participants.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [window.state.participants[i], window.state.participants[j]] = [window.state.participants[j], window.state.participants[i]];
+            }
+            saveAndSync();
+        }
+
+        function fillPreset32Participants(shouldSync = true) {
+            const presets = [
+                "DJ Ramadan (DJ_Ramadan27)", "Bass King (BassKing_RBLX)", "Sound Master (SoundMasterX)", "Audio Warrior (AudioWarrior99)",
+                "Subwoofer Pro (SubwooferPro)", "Beat Drop (BeatDrop_ID)", "Night Core (NightCore_ID)", "Echo Boom (EchoBoom2027)",
+                "Frequency X (Freq_X_Roblox)", "Sonic Boom (SonicBoom_ID)", "Remixer ID (Remixer_Indo)", "Low Freq (LowFreq_Master)",
+                "Audio Apex (AudioApex_RBLX)", "Electro Beat (ElectroBeat_27)", "Mega Hz (MegaHz_Sound)", "Sound Wave (SoundWave_ID)",
+                "Sound Legend (SoundLegend_27)", "Bass Monster (BassMonster_RBLX)", "Audio Titan (AudioTitan_ID)", "DJ Takbir (DJ_Takbir2027)",
+                "Sound Storm (SoundStorm_ID)", "Vibez King (VibezKing_RBLX)", "Rhythm Knight (RhythmKnight_ID)", "Pulse Master (PulseMaster27)",
+                "Hyper Bass (HyperBass_RBLX)", "Audio Phantom (AudioPhantom_ID)", "Sound Breaker (SoundBreaker_27)", "Echo Pulse (EchoPulse_RBLX)",
+                "DJ Sahur (DJ_Sahur_Official)", "Bass Blaster (BassBlaster_ID)", "Sonic Wave (SonicWave_2027)", "Sound Overlord (SoundOverlord_RBLX)"
+            ];
+
+            window.state.participants = presets.map((str, idx) => {
+                const parts = str.split(' (');
+                const name = parts[0];
+                const roblox = parts[1].replace(')', '');
+                return {
+                    id: `p_${idx+1}`,
+                    name: name,
+                    roblox: roblox,
+                    group: null
+                };
+            });
+
+            autoGenerateGroups(false);
+            generateFullSchedule(false);
+
+            if (shouldSync) saveAndSync();
+        }
+
+        function autoGenerateGroups(shouldSync = true) {
+            if (window.state.participants.length === 0) return alert("Belum ada peserta!");
+            const groupNames = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+            
+            window.state.participants.forEach((p, idx) => {
+                const groupIdx = Math.floor(idx / 4);
+                p.group = groupNames[groupIdx] || 'H';
+            });
+
+            if (shouldSync) saveAndSync();
+        }
+
+        function renderParticipantTable() {
+            const tbody = document.getElementById('participantTableBody');
+            const countEl = document.getElementById('participantCount');
+            if (!tbody) return;
+
+            countEl.innerText = window.state.participants.length;
+
+            if (window.state.participants.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-500">Belum ada data peserta. Klik 'Load 32 Sample' untuk mengisi otomatis.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = window.state.participants.map((p, idx) => `
+                <tr class="hover:bg-dark-hover transition-colors">
+                    <td class="p-3 font-semibold text-gray-400">${idx + 1}</td>
+                    <td class="p-3 font-bold text-white">${p.name}</td>
+                    <td class="p-3 text-gold-400 font-mono text-[11px]">@${p.roblox}</td>
+                    <td class="p-3">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${p.group ? 'bg-gold-500/20 text-gold-400 border border-gold-500/30' : 'bg-gray-800 text-gray-400'}">
+                            Grup ${p.group || '-'}
+                        </span>
+                    </td>
+                    <td class="p-3 text-right space-x-1">
+                        <button onclick="editParticipant('${p.id}')" class="text-gray-400 hover:text-gold-400 p-1"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="deleteParticipant('${p.id}')" class="text-gray-400 hover:text-red-400 p-1"><i class="fa-solid fa-trash-can"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // GROUP STAGE & STANDINGS CALCULATION ENGINE
+        function calculateStandings() {
+            const groups = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+            const standings = {};
+
+            groups.forEach(g => {
+                const groupParticipants = window.state.participants.filter(p => p.group === g);
+                standings[g] = groupParticipants.map(p => ({
+                    id: p.id,
+                    name: p.name,
+                    roblox: p.roblox,
+                    mp: 0,
+                    w: 0,
+                    d: 0,
+                    l: 0,
+                    pts: 0,
+                    h2h: {}
+                }));
+
+                const groupMatches = window.state.matches.filter(m => m.group === g && m.status === 'Finished');
+
+                groupMatches.forEach(m => {
+                    const t1 = standings[g].find(item => item.id === m.team1Id);
+                    const t2 = standings[g].find(item => item.id === m.team2Id);
+
+                    if (t1 && t2) {
+                        t1.mp += 1;
+                        t2.mp += 1;
+
+                        if (m.result === 'TEAM1_WIN') {
+                            t1.w += 1;
+                            t1.pts += 3;
+                            t2.l += 1;
+                            t1.h2h[t2.id] = (t1.h2h[t2.id] || 0) + 3;
+                        } else if (m.result === 'TEAM2_WIN') {
+                            t2.w += 1;
+                            t2.pts += 3;
+                            t1.l += 1;
+                            t2.h2h[t1.id] = (t2.h2h[t1.id] || 0) + 3;
+                        } else if (m.result === 'DRAW') {
+                            t1.d += 1;
+                            t1.pts += 1;
+                            t2.d += 1;
+                            t2.pts += 1;
+                            t1.h2h[t2.id] = (t1.h2h[t2.id] || 0) + 1;
+                            t2.h2h[t1.id] = (t2.h2h[t1.id] || 0) + 1;
+                        }
+                    }
+                });
+
+                // STRICT TIE-BREAKER SORTING: 1. PTS -> 2. Head-To-Head -> 3. Total Wins -> 4. Name
+                standings[g].sort((a, b) => {
+                    if (b.pts !== a.pts) return b.pts - a.pts;
+                    // Head to Head check
+                    const h2hDiff = (b.h2h[a.id] || 0) - (a.h2h[b.id] || 0);
+                    if (h2hDiff !== 0) return h2hDiff;
+                    if (b.w !== a.w) return b.w - a.w;
+                    return a.name.localeCompare(b.name);
+                });
+            });
+
+            return standings;
+        }
+
+        function renderDashboardStandings() {
+            const grid = document.getElementById('groupStandingsGrid');
+            if (!grid) return;
+
+            const standings = calculateStandings();
+            const groups = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+
+            grid.innerHTML = groups.map(g => {
+                const list = standings[g] || [];
+                return `
+                    <div class="glass-card rounded-2xl p-4 border-gold-500/20">
+                        <div class="flex items-center justify-between mb-3 border-b border-gold-500/15 pb-2">
+                            <span class="font-display font-bold text-sm text-gold-400 flex items-center gap-2">
+                                <i class="fa-solid fa-shield text-xs"></i> GRUP ${g}
+                            </span>
+                            <span class="text-[10px] text-gray-400 font-medium">${list.length} Peserta</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs">
+                                <thead class="text-gray-400 text-[10px] uppercase border-b border-gray-800">
+                                    <tr>
+                                        <th class="py-1.5 px-2">Pos</th>
+                                        <th class="py-1.5 px-2">Peserta</th>
+                                        <th class="py-1.5 px-2 text-center">MP</th>
+                                        <th class="py-1.5 px-2 text-center">W</th>
+                                        <th class="py-1.5 px-2 text-center">D</th>
+                                        <th class="py-1.5 px-2 text-center">L</th>
+                                        <th class="py-1.5 px-2 text-center font-bold text-gold-400">PTS</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-800/40">
+                                    ${list.map((item, idx) => {
+                                        const isQualified = idx < 2 && item.mp > 0;
+                                        return `
+                                            <tr class="${isQualified ? 'bg-gold-500/5' : ''} hover:bg-dark-hover transition-colors">
+                                                <td class="py-2 px-2 font-bold ${idx < 2 ? 'text-gold-400' : 'text-gray-500'}">
+                                                    ${idx + 1} ${idx < 2 ? '<span class="text-[9px] bg-gold-500/20 text-gold-400 px-1 rounded ml-0.5">Q</span>' : ''}
+                                                </td>
+                                                <td class="py-2 px-2">
+                                                    <div class="font-semibold text-white leading-tight">${item.name}</div>
+                                                    <div class="text-[10px] text-gray-500 font-mono">@${item.roblox}</div>
+                                                </td>
+                                                <td class="py-2 px-2 text-center text-gray-400">${item.mp}</td>
+                                                <td class="py-2 px-2 text-center text-emerald-400 font-semibold">${item.w}</td>
+                                                <td class="py-2 px-2 text-center text-blue-400 font-semibold">${item.d}</td>
+                                                <td class="py-2 px-2 text-center text-red-400 font-semibold">${item.l}</td>
+                                                <td class="py-2 px-2 text-center font-bold text-gold-400 text-sm">${item.pts}</td>
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                    ${list.length === 0 ? '<tr><td colspan="7" class="py-3 text-center text-gray-500 text-xs">Belum ada peserta di grup ini</td></tr>' : ''}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // SCHEDULE GENERATOR & MATCH CENTER
+        function generateFullSchedule(shouldSync = true) {
+            const startDateInput = document.getElementById('genStartDate').value || "2027-03-10";
+            const intervalDays = parseInt(document.getElementById('genInterval').value || "2");
+            const timeSlot = document.getElementById('genStartTime').value || "20:00";
+
+            window.state.matches = [];
+            const groups = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+            let matchCounter = 1;
+
+            groups.forEach(g => {
+                const members = window.state.participants.filter(p => p.group === g);
+                if (members.length < 4) return;
+
+                // Round Robin 3 Matchdays (4 teams: 6 matches total per group)
+                const pairings = [
+                    // Matchday 1
+                    { md: 1, t1: members[0], t2: members[1] },
+                    { md: 1, t1: members[2], t2: members[3] },
+                    // Matchday 2
+                    { md: 2, t1: members[0], t2: members[2] },
+                    { md: 2, t1: members[1], t2: members[3] },
+                    // Matchday 3
+                    { md: 3, t1: members[0], t2: members[3] },
+                    { md: 3, t1: members[1], t2: members[2] }
+                ];
+
+                pairings.forEach(pair => {
+                    const dateObj = new Date(startDateInput);
+                    dateObj.setDate(dateObj.getDate() + ((pair.md - 1) * intervalDays));
+                    const formattedDate = dateObj.toISOString().split('T')[0] + `T${timeSlot}`;
+
+                    window.state.matches.push({
+                        id: `M${String(matchCounter++).padStart(2, '0')}`,
+                        group: g,
+                        matchday: pair.md,
+                        date: formattedDate,
+                        team1Id: pair.t1.id,
+                        team2Id: pair.t2.id,
+                        status: 'Upcoming',
+                        result: null
+                    });
+                });
+            });
+
+            if (shouldSync) saveAndSync();
+        }
+
+        function renderSchedule() {
+            const container = document.getElementById('scheduleContainer');
+            if (!container) return;
+
+            const fGroup = document.getElementById('filterGroup').value;
+            const fMatchday = document.getElementById('filterMatchday').value;
+            const fStatus = document.getElementById('filterStatus').value;
+            const search = document.getElementById('scheduleSearch').value.toLowerCase();
+
+            let matches = [...window.state.matches];
+
+            if (fGroup !== 'ALL') matches = matches.filter(m => m.group === fGroup);
+            if (fMatchday !== 'ALL') matches = matches.filter(m => m.matchday == fMatchday);
+            if (fStatus !== 'ALL') matches = matches.filter(m => m.status === fStatus);
+
+            if (search) {
+                matches = matches.filter(m => {
+                    const t1 = window.state.participants.find(p => p.id === m.team1Id);
+                    const t2 = window.state.participants.find(p => p.id === m.team2Id);
+                    return (t1 && t1.name.toLowerCase().includes(search)) || (t2 && t2.name.toLowerCase().includes(search));
+                });
+            }
+
+            if (matches.length === 0) {
+                container.innerHTML = `<div class="glass-card rounded-xl p-8 text-center text-gray-400">Tidak ada jadwal pertandingan yang sesuai filter.</div>`;
+                return;
+            }
+
+            container.innerHTML = matches.map(m => {
+                const t1 = window.state.participants.find(p => p.id === m.team1Id) || { name: 'TBD', roblox: 'TBD' };
+                const t2 = window.state.participants.find(p => p.id === m.team2Id) || { name: 'TBD', roblox: 'TBD' };
+
+                let resultBadge = '';
+                if (m.status === 'Finished') {
+                    if (m.result === 'TEAM1_WIN') {
+                        resultBadge = `<span class="px-2.5 py-1 rounded-lg bg-gold-500/20 text-gold-400 border border-gold-500/40 text-xs font-bold">${t1.name} MENANG</span>`;
+                    } else if (m.result === 'TEAM2_WIN') {
+                        resultBadge = `<span class="px-2.5 py-1 rounded-lg bg-gold-500/20 text-gold-400 border border-gold-500/40 text-xs font-bold">${t2.name} MENANG</span>`;
+                    } else {
+                        resultBadge = `<span class="px-2.5 py-1 rounded-lg bg-blue-500/20 text-blue-400 border border-blue-500/40 text-xs font-bold">HASIL SERI</span>`;
+                    }
+                } else if (m.status === 'Live') {
+                    resultBadge = `<span class="px-2.5 py-1 rounded-lg bg-red-500/20 text-red-400 border border-red-500/40 text-xs font-bold animate-pulse">🔴 LIVE MATCH</span>`;
+                } else {
+                    resultBadge = `<span class="px-2.5 py-1 rounded-lg bg-gray-800 text-gray-400 text-xs font-medium">${m.status}</span>`;
+                }
+
+                const dateStr = new Date(m.date).toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+                return `
+                    <div class="glass-card rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 border-gold-500/10 hover:border-gold-500/30 transition-all">
+                        <div class="flex items-center gap-3 w-full md:w-auto">
+                            <span class="text-xs font-bold font-display text-gold-400 bg-gold-500/10 px-2.5 py-1 rounded-lg border border-gold-500/20">
+                                GRUP ${m.group} • MD ${m.matchday}
+                            </span>
+                            <span class="text-xs text-gray-400"><i class="fa-regular fa-clock text-[10px]"></i> ${dateStr} WIB</span>
+                        </div>
+
+                        <!-- Competitors Display -->
+                        <div class="flex items-center justify-center gap-4 w-full md:w-1/2">
+                            <div class="text-right flex-1">
+                                <h4 class="font-bold text-white text-sm leading-tight">${t1.name}</h4>
+                                <span class="text-[10px] text-gold-400 font-mono">@${t1.roblox}</span>
+                            </div>
+
+                            <div class="flex flex-col items-center">
+                                <span class="font-display font-black text-xs text-gold-500 bg-dark-bg px-2 py-1 rounded-md border border-gold-500/20">VS</span>
+                            </div>
+
+                            <div class="text-left flex-1">
+                                <h4 class="font-bold text-white text-sm leading-tight">${t2.name}</h4>
+                                <span class="text-[10px] text-gold-400 font-mono">@${t2.roblox}</span>
+                            </div>
+                        </div>
+
+                        <!-- Result & Actions -->
+                        <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+                            ${resultBadge}
+                            <button onclick="openMatchEditModal('${m.id}')" class="admin-only bg-dark-hover border border-gold-500/30 text-gold-400 hover:bg-gold-500/20 px-3 py-1.5 rounded-lg text-xs font-semibold">
+                                <i class="fa-solid fa-pen"></i> Input Hasil
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // MATCH RESULT EDIT MODAL LOGIC (STRICT NON-NUMERIC SCORING)
+        let selectedOutcome = null;
+
+        function openMatchEditModal(matchId) {
+            if (!window.state.isAdmin) return alert("Silakan login admin terlebih dahulu!");
+            const match = window.state.matches.find(m => m.id === matchId);
+            if (!match) return;
+
+            const t1 = window.state.participants.find(p => p.id === match.team1Id) || { name: 'Tim 1' };
+            const t2 = window.state.participants.find(p => p.id === match.team2Id) || { name: 'Tim 2' };
+
+            document.getElementById('modalMatchId').value = match.id;
+            document.getElementById('modalMatchMeta').innerText = `MATCH ${match.id} - GRUP ${match.group}`;
+            document.getElementById('modalMatchStatus').value = match.status;
+            document.getElementById('modalMatchDateTime').value = match.date;
+
+            document.getElementById('labelTeam1Win').innerText = `${t1.name} MENANG`;
+            document.getElementById('labelTeam2Win').innerText = `${t2.name} MENANG`;
+
+            selectedOutcome = match.result;
+            highlightOutcomeButtons();
+
+            document.getElementById('matchEditModal').classList.remove('hidden');
+        }
+
+        function closeMatchModal() {
+            document.getElementById('matchEditModal').classList.add('hidden');
+        }
+
+        function selectOutcome(outcome) {
+            selectedOutcome = outcome;
+            highlightOutcomeButtons();
+        }
+
+        function highlightOutcomeButtons() {
+            const b1 = document.getElementById('btnOutcomeT1');
+            const bDraw = document.getElementById('btnOutcomeDraw');
+            const b2 = document.getElementById('btnOutcomeT2');
+
+            [b1, bDraw, b2].forEach(b => b.classList.remove('bg-gold-500', 'text-dark-bg', 'border-gold-500', 'bg-blue-500'));
+
+            if (selectedOutcome === 'TEAM1_WIN') {
+                b1.classList.add('bg-gold-500', 'text-dark-bg', 'border-gold-500');
+            } else if (selectedOutcome === 'DRAW') {
+                bDraw.classList.add('bg-blue-500', 'text-white', 'border-blue-400');
+            } else if (selectedOutcome === 'TEAM2_WIN') {
+                b2.classList.add('bg-gold-500', 'text-dark-bg', 'border-gold-500');
+            }
+        }
+
+        function saveMatchResult() {
+            const matchId = document.getElementById('modalMatchId').value;
+            const match = window.state.matches.find(m => m.id === matchId);
+            if (!match) return;
+
+            match.status = document.getElementById('modalMatchStatus').value;
+            match.date = document.getElementById('modalMatchDateTime').value;
+
+            if (match.status === 'Finished' && !selectedOutcome) {
+                return alert("Pilih salah satu hasil akhir: MENANG atau SERI!");
+            }
+
+            match.result = selectedOutcome;
+            closeMatchModal();
+            saveAndSync();
+        }
+
+        // KNOCKOUT STAGE & VISUAL BRACKET ENGINE
+        function autoSeedKnockout() {
+            if (!window.state.isAdmin) return alert("Akses Admin diperlukan.");
+            const standings = calculateStandings();
+            const groups = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+
+            // Check if top 2 are available in all groups
+            for (let g of groups) {
+                if (!standings[g] || standings[g].length < 2) {
+                    return alert(`Grup ${g} belum lengkap! Pastikan semua grup terisi.`);
+                }
+            }
+
+            // Standard FIFA World Cup Style Seeding
+            // R16: A1 vs B2, C1 vs D2, E1 vs F2, G1 vs H2, B1 vs A2, D1 vs C2, F1 vs E2, H1 vs G2
+            const seeds = [
+                { id: 'R16_1', t1: standings['A'][0], t2: standings['B'][1] },
+                { id: 'R16_2', t1: standings['C'][0], t2: standings['D'][1] },
+                { id: 'R16_3', t1: standings['E'][0], t2: standings['F'][1] },
+                { id: 'R16_4', t1: standings['G'][0], t2: standings['H'][1] },
+                { id: 'R16_5', t1: standings['B'][0], t2: standings['A'][1] },
+                { id: 'R16_6', t1: standings['D'][0], t2: standings['C'][1] },
+                { id: 'R16_7', t1: standings['F'][0], t2: standings['E'][1] },
+                { id: 'R16_8', t1: standings['H'][0], t2: standings['G'][1] }
+            ];
+
+            window.state.knockoutMatches = seeds.map((s, idx) => ({
+                id: s.id,
+                stage: 'R16',
+                title: `R16 Match ${idx + 1}`,
+                team1: s.t1 ? { id: s.t1.id, name: s.t1.name, roblox: s.t1.roblox } : null,
+                team2: s.t2 ? { id: s.t2.id, name: s.t2.name, roblox: s.t2.roblox } : null,
+                winnerId: null
+            }));
+
+            // Initialize subsequent empty slots (QF, SF, THIRD, FINAL)
+            for (let i = 1; i <= 4; i++) {
+                window.state.knockoutMatches.push({ id: `QF_${i}`, stage: 'QF', title: `QF ${i}`, team1: null, team2: null, winnerId: null });
+            }
+            for (let i = 1; i <= 2; i++) {
+                window.state.knockoutMatches.push({ id: `SF_${i}`, stage: 'SF', title: `Semi Final ${i}`, team1: null, team2: null, winnerId: null });
+            }
+            window.state.knockoutMatches.push({ id: 'THIRD_1', stage: 'THIRD', title: 'Perebutan Juara 3', team1: null, team2: null, winnerId: null });
+            window.state.knockoutMatches.push({ id: 'FINAL_1', stage: 'FINAL', title: 'GRAND FINAL', team1: null, team2: null, winnerId: null });
+
+            saveAndSync();
+        }
+
+        function setKnockoutWinner(matchId, winnerTeam) {
+            if (!window.state.isAdmin) return alert("Akses Admin diperlukan.");
+            const km = window.state.knockoutMatches.find(m => m.id === matchId);
+            if (!km || !winnerTeam) return;
+
+            km.winnerId = winnerTeam.id;
+
+            // Automatically advance winner to next bracket stage
+            if (km.stage === 'R16') {
+                const matchNum = parseInt(matchId.replace('R16_', ''));
+                const qfNum = Math.ceil(matchNum / 2);
+                const qfMatch = window.state.knockoutMatches.find(m => m.id === `QF_${qfNum}`);
+                if (qfMatch) {
+                    if (matchNum % 2 !== 0) qfMatch.team1 = winnerTeam;
+                    else qfMatch.team2 = winnerTeam;
+                }
+            } else if (km.stage === 'QF') {
+                const matchNum = parseInt(matchId.replace('QF_', ''));
+                const sfNum = Math.ceil(matchNum / 2);
+                const sfMatch = window.state.knockoutMatches.find(m => m.id === `SF_${sfNum}`);
+                if (sfMatch) {
+                    if (matchNum % 2 !== 0) sfMatch.team1 = winnerTeam;
+                    else sfMatch.team2 = winnerTeam;
+                }
+            } else if (km.stage === 'SF') {
+                const matchNum = parseInt(matchId.replace('SF_', ''));
+                const finalMatch = window.state.knockoutMatches.find(m => m.id === 'FINAL_1');
+                const thirdMatch = window.state.knockoutMatches.find(m => m.id === 'THIRD_1');
+
+                const loserTeam = winnerTeam.id === km.team1.id ? km.team2 : km.team1;
+
+                if (finalMatch) {
+                    if (matchNum === 1) finalMatch.team1 = winnerTeam;
+                    else finalMatch.team2 = winnerTeam;
+                }
+                if (thirdMatch) {
+                    if (matchNum === 1) thirdMatch.team1 = loserTeam;
+                    else thirdMatch.team2 = loserTeam;
+                }
+            } else if (km.stage === 'FINAL') {
+                window.state.champions.first = winnerTeam;
+                window.state.champions.second = winnerTeam.id === km.team1.id ? km.team2 : km.team1;
+            } else if (km.stage === 'THIRD') {
+                window.state.champions.third = winnerTeam;
+            }
+
+            saveAndSync();
+        }
+
+        function renderKnockoutBracket() {
+            const stages = ['R16', 'QF', 'SF', 'THIRD', 'FINAL'];
+            stages.forEach(stg => {
+                const col = document.getElementById(`bracket-${stg}`);
+                if (!col) return;
+
+                const matches = window.state.knockoutMatches.filter(m => m.stage === stg);
+
+                if (matches.length === 0) {
+                    col.innerHTML = `<div class="text-center text-xs text-gray-500 p-4">Belum Digenerate</div>`;
+                    return;
+                }
+
+                col.innerHTML = matches.map(m => {
+                    const t1 = m.team1;
+                    const t2 = m.team2;
+
+                    return `
+                        <div class="glass-card rounded-xl p-2.5 border-gold-500/20 text-xs shadow-md">
+                            <div class="text-[9px] font-bold text-gold-400 mb-1 flex justify-between">
+                                <span>${m.title}</span>
+                                ${m.winnerId ? '<span class="text-emerald-400">FINISH</span>' : ''}
+                            </div>
+                            
+                            <!-- Team 1 -->
+                            <div onclick="setKnockoutWinner('${m.id}', m.team1)" class="flex justify-between items-center p-1.5 rounded-lg border ${m.winnerId === (t1?.id) ? 'bg-gold-500/20 border-gold-500 text-white font-bold' : 'bg-dark-bg border-gray-800 text-gray-300'} cursor-pointer hover:border-gold-500/50 mb-1">
+                                <span class="truncate">${t1 ? t1.name : 'TBD'}</span>
+                                ${m.winnerId === (t1?.id) ? '<i class="fa-solid fa-crown text-gold-400 text-[10px]"></i>' : ''}
+                            </div>
+
+                            <!-- Team 2 -->
+                            <div onclick="setKnockoutWinner('${m.id}', m.team2)" class="flex justify-between items-center p-1.5 rounded-lg border ${m.winnerId === (t2?.id) ? 'bg-gold-500/20 border-gold-500 text-white font-bold' : 'bg-dark-bg border-gray-800 text-gray-300'} cursor-pointer hover:border-gold-500/50">
+                                <span class="truncate">${t2 ? t2.name : 'TBD'}</span>
+                                ${m.winnerId === (t2?.id) ? '<i class="fa-solid fa-crown text-gold-400 text-[10px]"></i>' : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            });
+
+            // Update Champion Card
+            const champHall = document.getElementById('championHall');
+            if (window.state.champions.first) {
+                champHall.classList.remove('hidden');
+                document.getElementById('championName').innerText = window.state.champions.first.name;
+                document.getElementById('championRoblox').innerText = `@${window.state.champions.first.roblox}`;
+            } else {
+                champHall.classList.add('hidden');
+            }
+        }
+
+        // STATISTICS TAB RENDERING
+        function renderStatsTable() {
+            const tbody = document.getElementById('statsTableBody');
+            if (!tbody) return;
+
+            const standings = calculateStandings();
+            let allStats = [];
+
+            Object.keys(standings).forEach(g => {
+                allStats = allStats.concat(standings[g]);
+            });
+
+            allStats.sort((a, b) => b.pts - a.pts || b.w - a.w);
+
+            tbody.innerHTML = allStats.map((item, idx) => {
+                const winRate = item.mp > 0 ? Math.round((item.w / item.mp) * 100) : 0;
+                return `
+                    <tr class="hover:bg-dark-hover transition-colors">
+                        <td class="p-3 font-bold ${idx < 3 ? 'text-gold-400' : 'text-gray-400'}">${idx + 1}</td>
+                        <td class="p-3 font-bold text-white">${item.name}</td>
+                        <td class="p-3 text-gold-400 font-mono">@${item.roblox}</td>
+                        <td class="p-3 font-semibold">Grup ${window.state.participants.find(p=>p.id===item.id)?.group || '-'}</td>
+                        <td class="p-3 text-center text-gray-300">${item.mp}</td>
+                        <td class="p-3 text-center text-emerald-400 font-semibold">${item.w}</td>
+                        <td class="p-3 text-center text-blue-400 font-semibold">${item.d}</td>
+                        <td class="p-3 text-center text-red-400 font-semibold">${item.l}</td>
+                        <td class="p-3 text-center font-bold text-white">${winRate}%</td>
+                        <td class="p-3 text-center font-extrabold text-gold-400 text-sm">${item.pts}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // METRIC CARDS OVERVIEW UPDATER
+        function updateMetricCards() {
+            document.getElementById('statTotalParticipants').innerText = `${window.state.participants.length} / 32`;
+            const finished = window.state.matches.filter(m => m.status === 'Finished').length;
+            const total = window.state.matches.length;
+            document.getElementById('statFinishedMatches').innerText = `${finished} / ${total}`;
+
+            if (window.state.champions.first) {
+                document.getElementById('statCurrentPhase').innerText = "Selesai 🏆";
+            } else if (window.state.knockoutMatches.length > 0) {
+                document.getElementById('statCurrentPhase').innerText = "Knockout Stage";
+            } else {
+                document.getElementById('statCurrentPhase').innerText = "Group Stage";
+            }
+        }
+
+        // LIVE COUNTDOWN TIMER CONTROLLER
+        function startLiveMatchCountdown() {
+            setInterval(() => {
+                const upcomingMatches = window.state.matches
+                    .filter(m => m.status === 'Upcoming' && new Date(m.date) > new Date())
+                    .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+                const widget = document.getElementById('liveCountdownWidget');
+                if (!widget) return;
+
+                if (upcomingMatches.length > 0) {
+                    const nextMatch = upcomingMatches[0];
+                    const t1 = window.state.participants.find(p => p.id === nextMatch.team1Id) || { name: 'TBD' };
+                    const t2 = window.state.participants.find(p => p.id === nextMatch.team2Id) || { name: 'TBD' };
+
+                    document.getElementById('nextMatchTitle').innerText = `${t1.name} vs ${t2.name} (Grup ${nextMatch.group})`;
+                    widget.classList.remove('hidden');
+
+                    const now = new Date().getTime();
+                    const target = new Date(nextMatch.date).getTime();
+                    const diff = target - now;
+
+                    if (diff > 0) {
+                        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                        const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+                        document.getElementById('cdDays').innerText = String(days).padStart(2, '0');
+                        document.getElementById('cdHours').innerText = String(hours).padStart(2, '0');
+                        document.getElementById('cdMins').innerText = String(mins).padStart(2, '0');
+                        document.getElementById('cdSecs').innerText = String(secs).padStart(2, '0');
+                    }
+                } else {
+                    widget.classList.add('hidden');
+                }
+            }, 1000);
+        }
+
+        // DATA BACKUP & RESTORE TOOLS
+        function exportJSONBackup() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(window.state, null, 2));
+            const dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", `RSB2027_Backup_${new Date().toISOString().split('T')[0]}.json`);
+            document.body.appendChild(dlAnchorElem);
+            dlAnchorElem.click();
+            dlAnchorElem.remove();
+        }
+
+        function importJSONBackup(event) {
+            if (!window.state.isAdmin) return alert("Akses Admin diperlukan.");
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedState = JSON.parse(e.target.result);
+                    window.state = { ...window.state, ...importedState };
+                    saveAndSync();
+                    alert("Data turnamen berhasil di-restore!");
+                } catch (err) {
+                    alert("Format file JSON tidak valid.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function confirmResetTournament() {
+            if (!window.state.isAdmin) return alert("Akses Admin diperlukan.");
+            if (confirm("APAKAH ANDA YAKIN? Seluruh data peserta, jadwal, dan poin akan DIHAPUS PERMANEN.")) {
+                window.state.participants = [];
+                window.state.matches = [];
+                window.state.knockoutMatches = [];
+                window.state.champions = { first: null, second: null, third: null };
+                saveAndSync();
+                alert("Turnamen berhasil di-reset.");
+            }
+        }
+
+        function saveAndSync() {
+            if (window.syncStateToCloud) {
+                window.syncStateToCloud();
+            } else {
+                saveToLocalStorage();
+                renderApp();
+            }
+        }
+
+        // SHARE MODAL CONTROLLER
+        function openShareModal() {
+            document.getElementById('shareModal').classList.remove('hidden');
+        }
+        function closeShareModal() {
+            document.getElementById('shareModal').classList.add('hidden');
+        }
+        function copyShareUrl() {
+            const input = document.getElementById('shareUrlInput');
+            input.select();
+            document.execCommand('copy');
+            alert("Link publik turnamen berhasil disalin ke clipboard!");
+            closeShareModal();
+        }
+
+        // PWA SERVICE WORKER & MANIFEST SETUP
+        let deferredPrompt = null;
+
+        function setupPwa() {
+            // Dynamic Web App Manifest Injection
+            const manifest = {
+                name: "RAMADAN SOUND BATTLE 2027",
+                short_name: "RSB 2027",
+                description: "Tournament Management System for Roblox Sound Battle",
+                start_url: "./",
+                display: "standalone",
+                background_color: "#0D0F12",
+                theme_color: "#D4AF37",
+                icons: [
+                    {
+                        src: "https://placehold.co/192x192/0D0F12/D4AF37?text=RSB+2027",
+                        sizes: "192x192",
+                        type: "image/png"
+                    },
+                    {
+                        src: "https://placehold.co/512x512/0D0F12/D4AF37?text=RSB+2027",
+                        sizes: "512x512",
+                        type: "image/png"
+                    }
+                ]
+            };
+
+            const stringManifest = JSON.stringify(manifest);
+            const blob = new Blob([stringManifest], { type: 'application/json' });
+            const manifestURL = URL.createObjectURL(blob);
+            const linkEl = document.createElement('link');
+            linkEl.rel = 'manifest';
+            linkEl.href = manifestURL;
+            document.head.appendChild(linkEl);
+
+            // Dynamic Service Worker Registration
+            if ('serviceWorker' in navigator) {
+                const swCode = `
+                    const CACHE_NAME = 'rsb-2027-v1';
+                    self.addEventListener('install', (e) => {
+                        e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(['./'])));
+                    });
+                    self.addEventListener('fetch', (e) => {
+                        e.respondWith(caches.match(e.request).then(response => response || fetch(e.request)));
+                    });
+                `;
+                const swBlob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(swBlob);
+                navigator.serviceWorker.register(swUrl).catch(err => console.log('SW setup skipped:', err));
+            }
+
+            // PWA Install Prompt Trigger
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                document.getElementById('pwaInstallBtn').classList.remove('hidden');
+                document.getElementById('pwaInstallBtnMobile').classList.remove('hidden');
+            });
+        }
+
+        function triggerPwaInstall() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted PWA installation');
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                alert("Aplikasi PWA siap dipasang melalui menu browser HP (Add to Home Screen).");
+            }
+        }
+    </script>
+</body>
+</html>
+```
